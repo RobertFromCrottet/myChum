@@ -7,11 +7,19 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
 struct RootView: View {
     @State private var path = NavigationPath()
+    @Query var allPoints: [MyPoint]
     
     var body: some View {
-        HomeView(id: 1, path: $path)
+        NavigationStack(path: $path) {
+                   HomeView( path: $path)
+                       .navigationDestination(for: Destination.self) { destination in
+                           destinationView(for: destination, path: $path, allPoints: allPoints)
+                       }
+               }        .preferredColorScheme(.light)
     }
+    
 }
