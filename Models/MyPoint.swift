@@ -12,25 +12,40 @@ import CoreLocation
 
 @Model
 class MyPoint {
-var id: Int
+    @Attribute(.unique) var id: UUID = UUID()
     var name: String
     var latitude: Double
     var longitude: Double
     var textDescription: String
-    var icon: String
-    var image: Data?
+    @Attribute var icon: String? = "mappin"
+    @Attribute var image: Data?
+    @Attribute var images: [Data] = []
     var country: String?
     var city: String?
-
-    init(id: Int = 0,name: String, latitude: Double, longitude: Double, textDescription: String, icon: String = "mappin", image: Data? = nil, country: String = "", city: String = "") {
-        self.id = id
+var adresse: String?
+    
+    init(
+        name: String = "",
+        latitude: Double = 0.0,
+        longitude: Double = 0.0,
+        textDescription: String = "",
+        icon: String? = "mappin",
+        image: Data? = nil,
+        images: [Data] = [],
+        city: String = "",
+        country: String = "",
+        adresse: String = ""
+    ) {
+        self.id = UUID()
         self.name = name
         self.latitude = latitude
         self.longitude = longitude
         self.textDescription = textDescription
         self.icon = icon
         self.image = image
-        self.country = country
+        self.images = images
         self.city = city
+        self.country = country
+        self.adresse = adresse
     }
 }

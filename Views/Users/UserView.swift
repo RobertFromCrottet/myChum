@@ -9,7 +9,7 @@ import SwiftUI
 
 struct UserView: View {
     // MARK: -  for navigation
-    let id: Int
+    let id: UUID
     @Binding var path: NavigationPath
     
     @Environment(\.dismiss) private var dismiss
@@ -23,15 +23,15 @@ struct UserView: View {
         HStack(spacing: 30){
             
 
-            ButtonNav(title: "Navigation->", destination: .navigation(id: 2), path: $path,tint: .red, framsiz: 200)
+            ButtonNav(title: "Navigation->", destination: .navigation(id: UUID()), path: $path,tint: .red, framsiz: 200)
         }    // Hstack
 //        .navigationBarBackButtonHidden(true)
 //        .toolbarBackground(.hidden, for:.navigationBar)
     }  //body
 } //View
 
-#Preview {
-    StatefulPreviewWrapper(NavigationPath()) { path in
-        UserView(id: 6, path: path)
-    }
-}
+//#Preview {
+//    StatefulPreviewWrapper(NavigationPath()) { path in
+//        UserView(id: UUID, path: path)
+//    }
+//}

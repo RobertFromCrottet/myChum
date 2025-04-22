@@ -1,0 +1,64 @@
+[
+    {
+        "name": "Tour Eiffel",
+        "latitude": 48.8584,
+        "longitude": 2.2945,
+        "textDescription": "Monument emblématique de Paris"
+    },
+    {
+        "name": "Maison à Crottet",
+        "latitude": 46.2711,
+        "longitude": 4.8935,
+        "textDescription": "Sweet home"
+    },
+    {
+        "name": "Pyramide de Khéops",
+        "latitude": 29.9792,
+        "longitude": 31.1342,
+        "textDescription": "Merveille du monde antique"
+            },
+     
+      {
+        "name": "Louvre",
+        "latitude": 48.8606,
+        "longitude": 2.3376,
+        "city": "Paris",
+        "country": "France"
+      },
+      {
+        "name": "Palais de Versailles",
+        "latitude": 48.8049,
+        "longitude": 2.1204,
+        "city": "Versailles",
+        "country": "France"
+      },
+      {
+        "name": "Mont Saint-Michel",
+        "latitude": 48.6361,
+        "longitude": -1.5115,
+        "city": "Le Mont-Saint-Michel",
+        "country": "France"
+      },
+      {
+        "name": "Dune du Pilat",
+        "latitude": 44.5895,
+        "longitude": -1.2131,
+        "city": "La Teste-de-Buch",
+        "country": "France"
+      },
+      {
+        "name": "Château de Chambord",
+        "latitude": 47.6163,
+        "longitude": 1.5169,
+        "city": "Chambord",
+        "country": "France"
+      },
+      {
+        "name": "Cité de Carcassonne",
+        "latitude": 43.2066,
+        "longitude": 2.3640,
+        "city": "Carcassonne",
+        "country": "France"
+      }
+    ]
+    

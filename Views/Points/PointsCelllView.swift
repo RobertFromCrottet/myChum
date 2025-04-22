@@ -11,7 +11,7 @@ import SwiftData
 
 struct PointsCellView: View {
     // MARK: -  for navigation
-    let id: Int
+    let id: UUID
     @Binding var path: NavigationPath
     
     let mypoint: MyPoint
@@ -22,6 +22,23 @@ struct PointsCellView: View {
             HStack(alignment: .top) {
 //                VStack {
                     HStack  {
+                        if let img = mypoint.previewImage {
+                                        Image(uiImage: img)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 50, height: 50)
+                                            .clipped()
+                                            .cornerRadius(8)
+                                    } else {
+                                        Image(systemName: mypoint.symbol)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 36, height: 36)
+                                            .padding(8)
+                                            .background(Color(.systemGray5))
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                                            .foregroundColor(.gray)
+                                    }
                         Text("\(mypoint.name)")
                             .font(.callout)
                             .foregroundStyle(.red)
@@ -52,20 +69,5 @@ struct PointsCellView: View {
             } // HStack
         } //NavigationLink
         
-    }
-}
-
-#Preview {
-    StatefulPreviewWrapper(NavigationPath()) { path in
-        PointsCellView(
-            id: 5,
-            path: path,
-            mypoint: MyPoint(
-                name: "Tour Eiffel",
-                latitude: 48.8584,
-                longitude: 2.2945,
-                textDescription: "Un monument iconique"
-            )
-        )
     }
 }
