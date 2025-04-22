@@ -43,11 +43,11 @@ extension Date {
 // MARK: - Icône automatique pour MyPoint
 extension MyPoint {
     var symbol: String {
-        switch icon.lowercased() {
+        switch icon?.lowercased() ?? "" {
         case "ville": return "building.2"
         case "montagne": return "mountain.2"
         case "plage": return "sun.max"
-        default: return icon
+        default: return icon ?? "house"
         }
     }
 }

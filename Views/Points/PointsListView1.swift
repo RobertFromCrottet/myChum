@@ -1,7 +1,14 @@
+//
+//  PointsListView1.swift
+//  Next
+//
+//  Created by Robert on 09/04/2025.
+//
+
 import SwiftUI
 import SwiftData
 
-struct PointsListView: View {
+struct PointsListView1: View {
     // MARK: -  for navigation
     let id: UUID
     @Binding var path: NavigationPath
@@ -26,7 +33,6 @@ struct PointsListView: View {
     enum SortOption: String, CaseIterable {
         case name = "Nom"
         case lat = "Latitude/longitude"
-        case adresse = "Adresse"
         case city = "Ville"
         case country = "Pays"
         
@@ -34,7 +40,6 @@ struct PointsListView: View {
             switch self {
             case .name: return SortDescriptor(\.name)
              case .lat: return SortDescriptor(\.latitude)
-                case .adresse: return SortDescriptor(\.adresse)
             case .city: return SortDescriptor(\.city)
             case .country: return SortDescriptor(\.country)
             }
@@ -45,7 +50,7 @@ struct PointsListView: View {
     @State private var isSearching: Bool = false
     
     var body: some View {
-//        NavigationStack {
+        NavigationStack {
             List {
                 if isSearching {
                     TextField("Rechercher un point sur n'importe quelle caractéristique", text: $searchText)
@@ -104,10 +109,9 @@ struct PointsListView: View {
                 ToolbarItem(placement: .principal) {
                     HStack {
                                                 Image(systemName: "hand.point.right.fill")
-                        Text("Liste des Points (\(pointsQuery.count))")
+                        Text("Liste (\(pointsQuery.count))")
                     }
                     .font(.title)
-                    .bold(true)
                     .foregroundColor(.red)
                 }
             }) //toolbar
@@ -120,73 +124,38 @@ struct PointsListView: View {
                         destinationView(for: destination, path: $path, allPoints: allPoints)
                     }
             }  // navigationDestination
-         
-        ZStack {
-            HStack {
-                // Bouton custom déjà stylé, on le garde tel quel
-                Button("Nouveau Point") {
-                    path.append(Destination.newpoint(id: UUID()))
-                }
-                .buttercup(color: .green)
-                .padding(.leading, 20)
-
-                // Chercher
-                Button("Chercher") {
-                    isSearching = true
-                }
-                .buttercup(color: .orange)
-
-                // Tout montrer
-                Button("Tout montrer") {
-                    isSearching = false
-                    searchText = ""
-                    sortPoints()
-                }
-                .buttercup(color: .gray)
-
-                Spacer()
-
-                // Navigation
-                Button("Navigation →") {
-                    path.append(Destination.navigation(id: UUID()))
-                }
-                .buttercup(color: .blue)
-                .padding(.trailing, 10)
-            }
+            
+            ZStack {
+                    HStack {
+                        ButtonNav(title: "Nouveau Point", destination: .newpoint(id: UUID()), path: $path,tint: .mint, framsiz: 220)
+                            .padding(.leading, 20)
+                        Button("Chercher") {
+                            isSearching = true
+                            
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.orange)
+                        
+                        Button("Tout montrer") {
+                            isSearching = false
+                            searchText = ""
+                            sortPoints()
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.gray)
+                        
+                        Spacer()
+                        
+                        Button("Navigation →") {
+                            path.append(Destination.navigation(id: UUID()))
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.blue)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .padding(.trailing, 10)
+                    }///Hstack
+            } // overlay
         }
-        
-        
-//            ZStack {
-//                    HStack {
-//                        ButtonNav(title: "Nouveau Point", destination: .newpoint(id: UUID()), path: $path,tint: .mint, framsiz: 220)
-//                            .padding(.leading, 20)
-//                        Button("Chercher") {
-//                            isSearching = true
-//                            
-//                        }
-//                        .buttonStyle(.bordered)
-//                        .tint(.orange)
-//                        
-//                        Button("Tout montrer") {
-//                            isSearching = false
-//                            searchText = ""
-//                            sortPoints()
-//                        }
-//                        .buttonStyle(.bordered)
-//                        .tint(.gray)
-//                        
-//                        Spacer()
-//                        
-//                        Button("Navigation →") {
-//                            path.append(Destination.navigation(id: UUID()))
-//                        }
-//                        .buttonStyle(.borderedProminent)
-//                        .tint(.blue)
-//                        .clipShape(RoundedRectangle(cornerRadius: 10))
-//                        .padding(.trailing, 10)
-//                    }///Hstack
-//            } // overlay
-//        }
             .navigationBarBackButtonHidden(true)
         
         }  //body
@@ -211,8 +180,6 @@ struct PointsListView: View {
             points = filtered.sorted { $0.name < $1.name }
         case .lat:
             points = filtered.sorted { $0.latitude < $1.latitude }
-        case .adresse:
-            points = filtered.sorted { $0.adresse ?? "" < $1.adresse ?? ""  }
         case .city:
             points = filtered.sorted {
                 ($0.city ?? "").localizedCaseInsensitiveCompare($1.city ?? "") == .orderedAscending
@@ -236,3 +203,21 @@ struct PointsListView: View {
     
     
 }  //VIEW
+
+//#Preview {
+//    StatefulPreviewWrapper(NavigationPath()) { path in
+//        PointsListView(
+//            id: 5,
+//            path: path,
+//            previewPoints: [
+//                MyPoint(
+//                    name: "Tour Eiffel",
+//                    latitude: 48.8584,
+//                    longitude: 2.2945,
+//                    textDescription: "Un monument iconique"
+//                )
+//            ]
+//        )
+//    }
+//}
+

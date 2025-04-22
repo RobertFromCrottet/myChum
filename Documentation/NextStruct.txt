@@ -1,0 +1,46 @@
+Next/
+├── Assets.xcassets
+├── Documentation/
+├── Models/
+│   └── MyPoint.swift
+├── Oldies/
+│   └── ContentView.swift
+├── Utilities/
+│   ├── RAM/
+│   │   ├── importsysstat.txt
+│   │   ├── memoryUsedByApp.swift
+│   │   ├── RAMDashBoardView.swift
+│   │   ├── SystemStats.swift
+│   │   └── UInt64.swift
+│   ├── BagOfTricks.swift
+│   ├── Banner.swift
+│   ├── Buttons.swift
+│   ├── colors.swift
+│   ├── EnumDestination.swift
+│   ├── Extensions.swift
+│   ├── ImportJasonPoints.swift
+│   ├── Markers.swift
+│   ├── mypoints.json
+│   ├── NavigationModule.swift
+│   ├── PhotoPickerView.swift
+│   └── PreviewWraper.swift
+├── Views/
+│   ├── Maps/
+│   │   ├── LocationManager.swift
+│   │   └── MapView.swift
+│   ├── Points/
+│   │   ├── AddPointView.swift
+│   │   ├── PointsCellView.swift
+│   │   ├── PointsDetailView.swift
+│   │   └── PointsListView.swift
+│   ├── Settings/
+│   │   └── SettingsView.swift
+│   ├── Start/
+│   │   ├── Header.swift
+│   │   ├── HomeView.swift
+│   │   ├── myNavigationView.swift
+│   │   └── RootView.swift
+│   └── Users/
+│       └── UserView.swift
+├── Next.entitlements
+└── NextApp.swift
