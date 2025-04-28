@@ -5,9 +5,15 @@
 //  Created by Robert on 10/04/2025.
 //
 
-
+#if os(iOS)
 import Foundation
+#if canImport(UIKit)
 import UIKit
+#endif
+
+#if canImport(AppKit)
+import AppKit
+#endif
 
 struct PhotoStorageManager {
     
@@ -50,3 +56,4 @@ struct PhotoStorageManager {
         print("🗑 Images supprimées pour le point \(uuid)")
     }
 }
+#endif

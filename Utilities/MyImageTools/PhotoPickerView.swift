@@ -21,7 +21,7 @@ struct PhotoPickerView: View {
         ) {
             Label("Choisir des photos", systemImage: "photo.on.rectangle.angled")
         }
-        .onChange(of: selectedPhotos) { newItems in
+        .onChange(of: selectedPhotos) { oldItem,newItems in
             print("🌀 PhotosPicker triggered avec \(newItems.count) élément(s)")
 
             for item in newItems {

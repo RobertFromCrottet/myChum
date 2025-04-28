@@ -58,23 +58,30 @@ struct MapView: View {
     private var visibleAnnotations: [MyPoint] { allPoints }
 
     // MARK: - Paramètres initiaux et états
-
-    var fromPoint: Bool = false
+    @State private var centerCoordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
     var initialCoordinate: CLLocationCoordinate2D? = nil
-
     @State private var itinerairePolyline: MKPolyline?
     @State private var derniereDestination: CLLocationCoordinate2D?
     @StateObject private var locationManager = LocationManager()
-    @FocusState private var isSearchFieldFocused: Bool
     @State private var lastSearchName: String = ""
-    @State private var showPointNames = true
     var center: CLLocationCoordinate2D?
     @State private var selectedStyle: MapStyleOption = .hybrid
     @State private var camera: MapCameraPosition = .automatic
+    
+    // MARK: - Point
+    @State private var pointToEdit: MyPoint?
+    @State private var selectedPoint: MyPoint? = nil
+    @State private var editingPoint: MyPoint? = nil
+    // MARK: - bool
+    var fromPoint: Bool = false
+    @FocusState private var isSearchFieldFocused: Bool
+    @State private var showPointNames = true
+    @State private var showMapSheet = false
     @State private var showMarkers = true
     @State private var showSearchSheet = false
     @State private var showButtons = true
-
+    @State private var showDetails: Bool = false
+    
     // MARK: - Ajout et suggestion de point
 
     @State private var showAddPointAlert = false
@@ -122,9 +129,11 @@ struct MapView: View {
     var body: some View {
         VStack {
             ZStack {
-                // MARK: - Choix de style et transport
+                // MARK: - Choix de style, transport & noms
 
                 HStack {
+                    
+                    // MARK: - picker style de carte
                     Picker("Style", selection: $selectedStyle) {
                         ForEach(MapStyleOption.allCases) { option in
                             Text(option.label).tag(option)
@@ -132,8 +141,7 @@ struct MapView: View {
                     }  // selected style
                     .padding(.leading)
                     
-                    
-                    if derniereDestination != nil {
+                    // MARK: - picker style de transport
                         Picker("Transport", selection: $selectedTransport) {
                             ForEach(TransportOption.allCases, id: \.self) { option in
                                 Text(option.rawValue).tag(option)
@@ -141,10 +149,8 @@ struct MapView: View {
                         } //    $selectedTransport
                         .padding(.leading)
                         .transition(.opacity.combined(with: .move(edge: .top)))
-                        .padding(.leading)
-                    }  // if derniere destination
-                    
-                    // Toggle pour afficher les noms des points
+    
+                    // MARK: - toogle Afficher les noms
                     Toggle("Afficher les noms", isOn: $showPointNames)
                         .font(.caption2)
                         .toggleStyle(.switch)
@@ -158,29 +164,23 @@ struct MapView: View {
                 .pickerStyle(.segmented)
                 .background(Color.lemonYellow)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
+                .padding(.top,-00)
                 
             } //ZStack
-            .padding(.top)
+            
+            
             // MARK: - Barre de recherche
-
             if isSearching {
                 HStack {
                     TextField("Votre Destination", text: $searchText)
                         .textFieldStyle(.roundedBorder)
                         .padding(.horizontal)
                         .focused($isSearchFieldFocused)
-                }  //HStack                .transition(.move(edge: .top).combined(with: .opacity))
+                }  //HStack
             } // if isSearching
 
-            // MARK: - Curseur centré pour l'ajout
-//
-//            Image(systemName: "mappin.circle.fill")
-//                .font(.system(size: 40))
-//                .foregroundColor(.red)
-//                .offset(y: -20)
 
-            // MARK: - Carte
-            
+            // MARK: - Carte position
             Map(position: $camera) {
                             if let polyline = itinerairePolyline {
                                 MapPolyline(polyline)
@@ -199,23 +199,16 @@ struct MapView: View {
                                 }
                             }
                             ForEach(visibleAnnotations) { point in
-                                Annotation(point.name, coordinate: CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude)) {
+                                Annotation(point.name, coordinate: CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude)){
                                     VStack(spacing: 2) {
                                         Image(systemName: point.symbol)
-                                            .foregroundColor(.red)
-                                        Text(point.name)
-                                            .font(.caption2)
-                                            .foregroundColor(.white)
-                                        // 🧭 Distance affichée
-                                        Text(locationManager.distance(to: CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude)))
-                                            .font(.caption2)
-                                            .foregroundColor(.white)
-
-                                        // 🥾 Durée estimée à pied
-                                        Text(locationManager.estimatedWalkingTime(to: CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude)))
-                                            .font(.caption2)
-                                            .foregroundColor(.white)
-                                    }
+                                        .foregroundColor(.white)
+                                            .onTapGesture {
+                                                print("🖱️ Tap sur annotation : \(point.name)")
+                                                pointToEdit = point
+                                                showMapSheet = true
+                                            }
+                                        }
                                     .padding(4)
                                 }
                             }
@@ -223,10 +216,11 @@ struct MapView: View {
                                 Annotation("", coordinate: pos.coordinate) {
                                     VStack(spacing: 2) {
                                         Image(systemName: "figure.walk.circle.fill")
-                                            .foregroundColor(.blue)
+                                            .foregroundColor(.yellow)
                                             .font(.title2)
-                                        Text("ma position")
+                                        Text("Position GPS")
                                             .font(.caption2)
+                                            .foregroundColor(.white)
                                         Text(locationManager.distance(to: pos.coordinate))
                                             .font(.caption2)
                                             .foregroundColor(.secondary)
@@ -243,6 +237,8 @@ struct MapView: View {
             .onMapCameraChange { context in
                 camera = .camera(context.camera)
             } // onMapCameraChange
+            
+            // MARK: - centrage initial
             .onAppear {  // ... centrage carte initial ...
                                     if fromPoint, let coord = initialCoordinate {
                         withAnimation {
@@ -266,7 +262,7 @@ struct MapView: View {
             .alert("Créer un point ?", isPresented: $showAddPointAlert) {
                 Button("Oui") {
                                    if let coord = pendingCoordinate {
-                                       let defaultIcon = "mappin.and.ellipse"
+                                       _ = "mappin.and.ellipse"
 
                                        let point = MyPoint(
                                            name: suggestedName,
@@ -320,12 +316,15 @@ struct MapView: View {
 
             // MARK: - Boutons principaux
             if showButtons {
-                           HStack(spacing: 5) {
-                               VStack(alignment: .leading) {
+                           HStack {
+                               //VStack(alignment: .leading) {
+                                   CarteButton(title: "liste des points", color: .Blue1){
+                                       path.append(Destination.pointsList(id: UUID()))
+                                   }
                                    CarteButton(title: "➕ Ajouter ici", color: .green) {
                                        demanderAjoutPointCentreCarte()
                                    }
-                               } //Hstack
+                              // } //Hstack
                                CarteButton(title: isSearching ? "🔍 OK" : "Aller à :", color: .yellow) {
                                    if isSearching {
                                        itinerairePolyline = nil
@@ -334,7 +333,7 @@ struct MapView: View {
                                        rechercherLieu(nom: searchText) { coord in
                                            if let coord = coord {
                                                withAnimation {
-                                                   camera = .camera(MapCamera(centerCoordinate: coord, distance: 20000))
+                                                   camera = .camera(MapCamera(centerCoordinate: coord, distance: 2000))
                                                }
                                            }
                                            withAnimation {
@@ -366,23 +365,22 @@ struct MapView: View {
                                    }
                                }
                                Spacer()
-                               CarteButton(title: "liste des points", color: .green){
-                                   path.append(Destination.pointsList(id: UUID()))
-                               }
+                              
                                CarteButton(title: "--> Navigation", color: .red) {
                                    path.append(Destination.navigation(id: UUID()))
                                }
                            }
-                           .padding(.bottom,-5)
-    
+                           .padding(.bottom,-0)
+                           .toolbarBackground(.hidden, for:.bottomBar)
                        
 //            if showButtons {
-//                HStack(spacing: 5) {
+//                HStack(spacing: 5) { 
 //                    // ... boutons d'action ...
 //                }
 //                .padding(.bottom,-5)
             }
         }
+        
         .sheet(isPresented: $showConfirmationAlert) {
             VStack(spacing: 16) {
                 Text("Créer un point centré sur la carte")
@@ -431,7 +429,31 @@ struct MapView: View {
             .padding()
             .presentationDetents([.medium])
         } // sheet enregistrer un point centre vue carte
+        .sheet(isPresented: Binding(
+            get: { showMapSheet && pointToEdit != nil },
+            set: { newValue in
+                showMapSheet = newValue
+                if !newValue {
+                    pointToEdit = nil
+                }
+            }
+        )) {
+            if let pointToEdit = pointToEdit {
+                SheetMAPView(point: Binding(
+                    get: { pointToEdit },
+                    set: { updated in
+                        self.pointToEdit = updated
+                    }
+                ),
+                             initialCoordinate: CLLocationCoordinate2D(latitude: pointToEdit.latitude, longitude: pointToEdit.longitude) // <-- ici !
+                )
+                .presentationDetents([.large])
+                       .presentationDragIndicator(.hidden)
+            }
+               
+        }
         .navigationBarBackButtonHidden(true)
+       // .ignoresSafeArea(.all)
     } // body
 
     // MARK: - Fonctions : Itinéraire
@@ -494,20 +516,20 @@ struct MapView: View {
 
     // MARK: - Fonctions : Double tap -> Reverse geocode
 
-  func handleDoubleTap(at coordinate: CLLocationCoordinate2D) {
-        pendingCoordinate = coordinate
-        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-        CLGeocoder().reverseGeocodeLocation(location) { placemarks, error in
-            if let placemark = placemarks?.first {
-                suggestedName = placemark.name ?? "Point sans nom"
-                suggestedCity = placemark.locality ?? "Inconnu"
-            } else {
-                suggestedName = "Point sans nom"
-                suggestedCity = "Inconnu"
-            }
-            showAddPointAlert = true
-        }
-    } // handleDoubleTap
+//  func handleDoubleTap(at coordinate: CLLocationCoordinate2D) {
+//        pendingCoordinate = coordinate
+//        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+//        CLGeocoder().reverseGeocodeLocation(location) { placemarks, error in
+//            if let placemark = placemarks?.first {
+//                suggestedName = placemark.name ?? "Point sans nom"
+//                suggestedCity = placemark.locality ?? "Inconnu"
+//            } else {
+//                suggestedName = "Point sans nom"
+//                suggestedCity = "Inconnu"
+//            }
+//            showAddPointAlert = true
+//        }
+//    } // handleDoubleTap
 
     // MARK: - Fonctions : Ajout point au centre carte
     func demanderAjoutPointCentreCarte() {

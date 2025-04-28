@@ -51,7 +51,7 @@ struct PointsListView: View {
                     TextField("Rechercher un point sur n'importe quelle caractéristique", text: $searchText)
                         .textFieldStyle(.roundedBorder)
                         .padding(.horizontal)
-                        .onChange(of: searchText) { _ in
+                        .onChange(of: searchText) { 
                             withAnimation {
                                 sortPoints()
                             }
@@ -115,7 +115,7 @@ struct PointsListView: View {
             .toolbarBackground(Color.lemonYellow, for: .navigationBar)
             .toolbarBackground(.visible, for:.navigationBar)
             .navigationDestination(for: MyPoint.self) { point in
-                PointDetailView(id: 5, path: $path, point: point)
+                PointDetailView(id: UUID (), path: $path, point: point)
                     .navigationDestination(for: Destination.self) { destination in
                         destinationView(for: destination, path: $path, allPoints: allPoints)
                     }
@@ -134,7 +134,7 @@ struct PointsListView: View {
                 Button("Chercher") {
                     isSearching = true
                 }
-                .buttercup(color: .orange)
+                .buttercup(color: .green)
 
                 // Tout montrer
                 Button("Tout montrer") {
@@ -142,7 +142,7 @@ struct PointsListView: View {
                     searchText = ""
                     sortPoints()
                 }
-                .buttercup(color: .gray)
+                .buttercup(color: .green)
 
                 Spacer()
 
@@ -150,7 +150,7 @@ struct PointsListView: View {
                 Button("Navigation →") {
                     path.append(Destination.navigation(id: UUID()))
                 }
-                .buttercup(color: .blue)
+                .buttercup(color: .red)
                 .padding(.trailing, 10)
             }
         }

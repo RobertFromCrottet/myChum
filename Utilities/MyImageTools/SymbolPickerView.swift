@@ -18,8 +18,9 @@ struct SymbolPickerView: View {
                         Image(systemName: icon.rawValue)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 32, height: 32)
+                            .frame(width: 20, height: 20)
                             .padding(8)
+                            .foregroundColor(.blue)
                             .background(selected == icon ? Color.blue.opacity(0.2) : Color.clear)
                             .clipShape(Circle())
                             .onTapGesture {
@@ -28,6 +29,8 @@ struct SymbolPickerView: View {
 
                         Text(icon.label)
                             .font(.caption2)
+                            .font(.system(size: 6))
+                            .foregroundColor(.blue)
                     }
                 }
             }

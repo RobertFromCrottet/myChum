@@ -57,28 +57,29 @@ struct SettingsView: View {
         Spacer()
         VStack {
             
-            VStack {
-                if let snapshot = ramSnapshot {
-                    RAMonitorView(snapshot: snapshot)
-                }
-                
-                HStack(alignment: .center, spacing: 16) {
-                    Button("📸 Dossier Photos") {
-                        showPhotoFolder = true
-                    }
-                    .buttercup(color: .orange)
-                    
-                    Text(photosFolderURL.path)
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                }
-                .sheet(isPresented: $showPhotoFolder) {
-                    PhotoFolderView(folderURL: photosFolderURL)
-                }// isPresented
+           
+            if let snapshot = ramSnapshot {
+                RAMonitorView(snapshot: snapshot)
             }
-        
+                VStack {
+                    
+                    HStack{
+                        Button("📸 Dossier Photos") {
+                            showPhotoFolder = true
+                        }
+                        .buttercup(color: .orange)
+                        
+                        Text(photosFolderURL.path)
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    }
+                    .sheet(isPresented: $showPhotoFolder) {
+                        PhotoFolderView(folderURL: photosFolderURL)
+                    }// isPresented
+                }  // VStack
+    
                         Button("Import JSON") {
                            
                         }
@@ -106,11 +107,12 @@ struct SettingsView: View {
                         }
                            
                 } //Vstack
-        ZStack{
-            
-        ButtonNav(title: "Navigation->", destination: .navigation(id: UUID()), path: $path,tint: .red, framsiz: 200)
-            
-        }
+        HStack(spacing: 30){
+            Spacer()
+
+            ButtonNav(title: "Navigation->", destination: .navigation(id: UUID()), path: $path,tint: .red, framsiz: 200)
+                .padding(.horizontal, 20)
+        }    // Hstack
 
         .navigationBarBackButtonHidden(true)
         .toolbarBackground(.hidden, for:.navigationBar)

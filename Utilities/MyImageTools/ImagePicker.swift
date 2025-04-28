@@ -5,8 +5,16 @@
 //  Created by Robert on 07/04/2025.
 //
 
+
+#if os(iOS)
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
+#endif
+
+#if canImport(AppKit)
+import AppKit
+#endif
 
 struct ImagePicker: UIViewControllerRepresentable {
     @Environment(\.dismiss) var dismiss
@@ -46,3 +54,4 @@ struct ImagePicker: UIViewControllerRepresentable {
         }
     }
 }
+#endif

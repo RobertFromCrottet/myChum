@@ -20,13 +20,15 @@ struct UserView: View {
     var body: some View {
         BannerText(text: "Utilisateurs", leftColor: .red, rightColor: .blue, textColor: .white, mySize: 40)
         Text("hello user")
+Spacer()
         HStack(spacing: 30){
-            
+            Spacer()
 
             ButtonNav(title: "Navigation->", destination: .navigation(id: UUID()), path: $path,tint: .red, framsiz: 200)
+                .padding(.horizontal, 20)
         }    // Hstack
-//        .navigationBarBackButtonHidden(true)
-//        .toolbarBackground(.hidden, for:.navigationBar)
+       .navigationBarBackButtonHidden(true)
+      .toolbarBackground(.hidden, for:.navigationBar)
     }  //body
 } //View
 

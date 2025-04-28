@@ -51,8 +51,6 @@ struct AddPointView: View {
                         TextField("Adresse", text: $adresse)
                         TextField("City", text: $city)
                         TextField("Country", text: $country)
-//                        TextField("Icon (SF Symbol)", text: $icon)
-                        SymbolPickerView(selected: $selectedIcon)
                     }
 
                     Section(header: Text("Description")) {
@@ -86,7 +84,7 @@ struct AddPointView: View {
                                 .clipShape(Capsule())
                         }
                         
-                        .onChange(of: selectedPhoto) { newItem in
+                        .onChange(of: selectedPhoto) {oldItem, newItem in
                             Task {
                                 if let data = try? await newItem?.loadTransferable(type: Data.self) {
                                     images.append(data)
@@ -182,20 +180,20 @@ struct AddPointView: View {
         print("📍 Point sauvegardé avec ID \(newPoint.id)")
         dismiss()
     }
-    func handleDoubleTap(at coordinate: CLLocationCoordinate2D) {
-        pendingCoordinate = coordinate
-        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-        let geocoder = CLGeocoder()
-
-        geocoder.reverseGeocodeLocation(location) { placemarks, error in
-            if let placemark = placemarks?.first {
-                suggestedName = placemark.name ?? "Lieu sans nom"
-                suggestedCity = placemark.locality ?? "Inconnu"
-            } else {
-                suggestedName = "Lieu sans nom"
-                suggestedCity = "Inconnu"
-            }
-            showAddPointAlert = true
-        }
-    }
+//    func handleDoubleTap(at coordinate: CLLocationCoordinate2D) {
+//        pendingCoordinate = coordinate
+//        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+//        let geocoder = CLGeocoder()
+//
+//        geocoder.reverseGeocodeLocation(location) { placemarks, error in
+//            if let placemark = placemarks?.first {
+//                suggestedName = placemark.name ?? "Lieu sans nom"
+//                suggestedCity = placemark.locality ?? "Inconnu"
+//            } else {
+//                suggestedName = "Lieu sans nom"
+//                suggestedCity = "Inconnu"
+//            }
+//            showAddPointAlert = true
+//        }
+//    }
 }

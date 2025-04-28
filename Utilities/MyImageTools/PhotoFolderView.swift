@@ -8,7 +8,7 @@
 
 import SwiftUI
 import SwiftData
-import class Next.MyPoint
+//import class Next.MyPoint
 
 struct PhotoFolderView: View {
     let folderURL: URL
@@ -82,21 +82,6 @@ struct PhotoFolderView: View {
             }
         }
     }
-
-//    func loadSubfolders() {
-//        do {
-//            let contents = try FileManager.default.contentsOfDirectory(at: folderURL, includingPropertiesForKeys: nil)
-//            
-//            let folders = contents.filter { url in
-//                url.hasDirectoryPath && UUID(uuidString: url.lastPathComponent) != nil
-//            }
-//
-//            subfolderNames = folders.map { $0.lastPathComponent }
-//            print("📁 Dossiers UUID trouvés : \(subfolderNames)")
-//        } catch {
-//            print("❌ Erreur lecture dossiers : \(error.localizedDescription)")
-//        }
-//    }
     func createDummyImage(named name: String, in folder: URL) {
         // Crée une image SwiftUI simple
         let image = UIImage(systemName: "leaf.fill")?

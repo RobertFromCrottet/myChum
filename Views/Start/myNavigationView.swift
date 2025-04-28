@@ -22,7 +22,7 @@ struct myNavigationView: View {
             HStack(spacing: 30){
                 ButtonNav(title: "Accueil", destination: .home(id: UUID()), path: $path,tint: .gold, framsiz: 180)
                 ButtonNav(title: "Réglages", destination: .settings(id: UUID()), path: $path,tint: .blue, framsiz: 180)
-                ButtonNav(title: "Utilisateurs", destination: .settings(id: UUID()), path: $path,tint: .orange, framsiz: 180)
+                ButtonNav(title: "Utilisateurs", destination: .user(id: UUID()), path: $path,tint: .orange, framsiz: 180)
 
                 ButtonNav(title: "Points", destination: .pointsList(id: UUID()), path: $path,tint: .mint, framsiz: 180)
                

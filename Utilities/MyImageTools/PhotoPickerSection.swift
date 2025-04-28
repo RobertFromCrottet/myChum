@@ -29,7 +29,7 @@ struct PhotoPickerSection: View {
             ) {
                 Label("Choisir une photo", systemImage: "photo")
             }
-            .onChange(of: selectedPhoto) { newItem in
+            .onChange(of: selectedPhoto) { oldItem,newItem in
                 Task {
                     if let data = try? await newItem?.loadTransferable(type: Data.self) {
                         images.append(data)

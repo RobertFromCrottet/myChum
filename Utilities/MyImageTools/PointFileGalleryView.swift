@@ -5,7 +5,7 @@
 //  Created by Robert on 10/04/2025.
 //
 
-
+#if os(iOS)
 import SwiftUI
 
 
@@ -94,3 +94,4 @@ struct PointFileGalleryView: View {
         }
     }
 }
+#endif

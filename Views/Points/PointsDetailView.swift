@@ -6,21 +6,19 @@ import MapKit
 
 struct PointDetailView: View {
     // MARK: -  for navigation
-    let id: Int
+    let id: UUID
     @Binding var path: NavigationPath
     @State var point: MyPoint
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
+  
     // MARK: -  for var declaration
-    @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 46.0, longitude: 4.8),
-        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-    )
+    @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var latitudeString = ""
     @State private var longitudeString = ""
 
-    
+    @State private var selectedIcon: SFIcon = .mappin
     @State private var icon: String = ""
     @State private var selectedPhoto: PhotosPickerItem?
 
@@ -29,10 +27,7 @@ struct PointDetailView: View {
     var body: some View {
         // MARK: -  for view detail point
         Form {
-//            TextField("UUID", text: point.UUId)
-                
             HStack  {
-                
                 Text("Nom :")
                     .font(.caption)
                     .frame(width:100)
@@ -43,7 +38,7 @@ struct PointDetailView: View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .frame(width: 300)
                     .foregroundColor(.blue)
-                //                    .padding()
+        
                 Text("Coordonnées GPS :")
                     .font(.caption)
                     .frame(width: 200)
@@ -51,8 +46,8 @@ struct PointDetailView: View {
                  .padding(EdgeInsets(top: 0, leading: 60, bottom: 0, trailing: 0))
                 TextField("Latitude", text: $latitudeString)
                     .keyboardType(.decimalPad)
-                    .onChange(of: latitudeString) { newValue in
-                        if let val = newValue.asDouble {
+                    .onChange(of: latitudeString) {
+                        if let val = latitudeString.asDouble {
                             point.latitude = val
                         }
                     }
@@ -64,8 +59,8 @@ struct PointDetailView: View {
                 Text(" / ")
                 TextField("Longitude", text: $longitudeString)
                     .keyboardType(.decimalPad)
-                    .onChange(of: longitudeString) { newValue in
-                        if let val = newValue.asDouble {
+                    .onChange(of: longitudeString) {
+                        if let val = longitudeString.asDouble {
                             point.longitude = val
                         }
                     }
@@ -76,13 +71,13 @@ struct PointDetailView: View {
                     .foregroundColor(.blue)
                 //                    .padding()
                 
-            }  //name
+            }  //name GPS
             HStack    {
                 Text("Adresse :")
                     .font(.caption)
                     .bold(true)
                     .frame(width:100)
-                    .padding(EdgeInsets(top: 0, leading:60, bottom: 0, trailing: 0))
+                    .padding(EdgeInsets(top: 0, leading:20, bottom: 0, trailing: 0))
                 TextField("Adresse", text: Binding(
                     get: { point.adresse ?? "" },
                     set: { point.adresse = $0 }
@@ -122,51 +117,73 @@ struct PointDetailView: View {
                 .foregroundColor(.blue)
                 .padding(EdgeInsets(top: 0, leading: -50, bottom: 0, trailing: 0))
                 
-            }
+            }  // adresse-->pays
             HStack{
-                Map(coordinateRegion: .constant(MKCoordinateRegion(
-                    center: CLLocationCoordinate2D(latitude: point.latitude,
-                                                   longitude: point.longitude),
-                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                )), annotationItems: [point]) { location in
-                    MapAnnotation(coordinate: CLLocationCoordinate2D(
-                        latitude: location.latitude,
-                        longitude: location.longitude
-                    )) {
-                        Image(systemName: location.icon ?? "mappin")
-                            .font(.title)
+
+                Map(position: $cameraPosition) {
+                    let val = point.name
+                    Annotation(val, coordinate: point.coordinate) {
+                        Image(systemName: "mappin")
                             .foregroundColor(.red)
                     }
-                } //map
+                }//map pointPosition
+                .mapStyle(.standard)
                 .frame(width:  600,height: 300)
                 .cornerRadius(12)
-                VStack {
+                ZStack {
                     
+                    VStack {
+                        Text("Icone")
+                            .font(.caption)
+                            .bold(true)
+                            .padding(.leading, 20)
+                        SymbolPickerView(selected: $selectedIcon)
+                            .frame(width: 600)
+                            .onChange(of: selectedIcon) {
+                                  point.icon = selectedIcon.rawValue
+                              }  // on change
+                        Spacer()
+                        Text("Description:")
+                            .font(.caption)
+                            .frame(width: 400)
+                            .bold(true)//section
+                        TextField("Description", text: $point.textDescription, axis: .vertical)
+                        
+                            .lineLimit(20)
+                            .font(.caption2)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 700)
+                            .foregroundColor(.blue)
+                            
+                    }
                     
-                    Text("Description:")
-                        .font(.caption)
-                        .frame(width: 200)
-                        .bold(true)//section
-                    TextField("Description", text: $point.textDescription)
-                        .font(.caption)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .frame(width: 300)
-                        .foregroundColor(.blue)
-                        .padding(.leading, 20)
-                }  //Vstack
+                    .padding(.leading, 20)
+//                    .padding(.top, -120)
+                }  //Zstack
                 
             }
             //            Section(header: Text("Photo")) {
             .onAppear {
+                    cameraPosition = .camera(
+                        MapCamera(centerCoordinate: point.coordinate, distance: 500)
+                    )
                 latitudeString = String(format: "%.6f", point.latitude)
                 longitudeString = String(format: "%.6f", point.longitude)
+                selectedIcon = SFIcon(rawValue: point.icon ?? "") ?? .mappin
             }
             if PhotoStorageManager.hasImages(for: point.id) {
                 PointFileGalleryView(uuid: point.id)
             } else {
-                Text("📭 Images enregistrées : \(point.images.count)")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                HStack {
+                    Text("📭 Images enregistrées : \(point.images.count)")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                    Button("Voir sur la carte") {
+                        path.append(Destination.mapAt(id: point.id, latitude: point.latitude, longitude: point.longitude))
+                    }
+                    .buttercup(color: .mint)
+                    .padding(.leading, 20)
+                }
             }
             PhotoSectionViewFixed(point: $point)
         }
@@ -181,13 +198,6 @@ struct PointDetailView: View {
                     path.append(Destination.pointsList(id: UUID()))
                 }
                 .buttercup(color: .red)
-                .padding(.leading, 20)
-
-                // Voir sur la carte
-                Button("Voir sur la carte") {
-                    path.append(Destination.mapAt(id: point.id, latitude: point.latitude, longitude: point.longitude))
-                }
-                .buttercup(color: .mint)
                 .padding(.leading, 20)
 
                 // Nouveau Point
