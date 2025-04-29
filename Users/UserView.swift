@@ -1,0 +1,59 @@
+//
+//  UserView.swift
+//  Horizon
+//
+//  Created by Robert on 31/03/2025.
+//
+
+import SwiftUI
+
+struct UserView: View {
+    // MARK: -  for navigation
+    let id: UUID
+    @Binding var path: NavigationPath
+    
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
+    
+    
+    
+    var body: some View {
+        BannerText(text: "Utilisateurs", leftColor: .red, rightColor: .blue, textColor: .white, mySize: 40)
+Spacer()
+       
+                VStack(spacing: 10) {
+              
+                   
+                    HStack {
+                        Spacer()
+                 
+                    ButtonNav(title: "Nouvel Utilisateur", destination: .scan(id: UUID()), path: $path,tint: .mint, framsiz: 240)
+                    
+                        Spacer()
+                        ButtonNav(title: "Liste des utilisateurs", destination: .scanGallery(id: UUID()), path: $path,tint: .mint, framsiz: 240)
+                        Spacer()
+                    } // HStack
+                        Spacer()
+                }
+                .padding()
+                .navigationBarBackButtonHidden(true)
+                .toolbarBackground(.hidden, for:.navigationBar)
+       
+            
+            
+            
+            
+            Spacer()
+
+            ButtonNav(title: "Navigation->", destination: .navigation(id: UUID()), path: $path,tint: .red, framsiz: 200)
+                .padding(.horizontal, 20)
+        }    // Hstack
+    
+    }  //view
+
+
+//#Preview {
+//    StatefulPreviewWrapper(NavigationPath()) { path in
+//        UserView(id: UUID, path: path)
+//    }
+//}
